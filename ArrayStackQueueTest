@@ -1,0 +1,101 @@
+import java.io.*;
+import java.util.EmptyStackException;
+import java.util.StringTokenizer;
+import java.util.NoSuchElementException;
+
+public class Main {
+    public static void main(String[] args) throws IOException {
+        try {
+            File file = new File("src/test");
+            FileReader fr = new FileReader(file);
+            BufferedReader br = new BufferedReader(fr);
+
+            String line = br.readLine();
+            while(line != null) {
+                Queue q = new Queue();
+                StringTokenizer st = new StringTokenizer(line, " ");
+                while(st.hasMoreTokens()) {
+                    int num1 = Integer.parseInt(st.nextToken());
+                    q.add(num1);
+                }
+                int k1 = q.remove();
+                int k2 = q.remove();
+                System.out.print(k1 + " " + k2 + " ");
+
+                line = br.readLine();
+                st = new StringTokenizer(line, " ");
+                while(st.hasMoreTokens()){
+                    int num2= Integer.parseInt(st.nextToken());
+                    q.add(num2);
+                }
+                while (!q.qisEmpty()) {
+                    int k3 = q.remove();
+                    System.out.print(k3 + " ");
+                }
+                System.out.println();
+
+                line = br.readLine();
+            }
+        } catch(FileNotFoundException e){
+            System.out.println("file not found");
+        } catch(IOException e) {
+            System.out.println("I/O exception");
+        }
+    }
+}
+
+class ArrayStack {
+    public int s[];
+    public int top;
+    public ArrayStack() {
+        s = new int[1];
+        top = -1;
+    }
+
+    public int pop() {
+        if(isEmpty()) throw new EmptyStackException();
+        int item = s[top];
+        s[top--] = 0;
+        if(size() > 0 && size() == s.length/4)
+            resize(s.length/2);
+        return item;
+    }
+    public void push(int newItem) {
+        if(size() == s.length)
+            resize(2*s.length);
+        s[++top] = newItem;
+
+    }
+    public void resize(int newSize){
+        int[] t = new int[newSize];
+        for(int i = 0; i < size(); i++)
+            t[i] = s[i];
+        s = t;
+    }
+    public int size() { return top + 1;}
+    public boolean isEmpty() { return size() == 0; }
+
+}
+
+class Queue {
+    ArrayStack A = new ArrayStack(); //input
+    ArrayStack B = new ArrayStack();//output
+    public int Asize() { return A.top + 1; }
+    public int Bsize() { return B.top + 1;}
+    public boolean qisEmpty() { return Bsize() + Asize() == 0;}
+
+    public void add(int x){
+        A.push(x);
+    }
+
+    public int remove(){
+        if(Bsize() != 0) {
+            return B.pop();
+        }
+        while(!A.isEmpty()) {
+            int newItem = A.pop();
+            B.push(newItem);
+        }
+        return B.pop();
+    }
+}
